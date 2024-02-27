@@ -1,15 +1,13 @@
-
 import React, { useEffect, useState } from "react";
-
 import { useGlobalDispatch } from "./Contexts/GlobalContext";
-
 import { useCrud } from "./Contexts/CrudContext";
-
 import EmployeeForm from "./Components/EmployeeForm";
 import Error from "./Components/Error";
 import Header from "./Components/Header";
 import TableComponent from "./Components/TableComponent";
 import { Paper, TableContainer } from "@mui/material";
+import { toast } from "react-toastify";
+import { TOAST_CONFIG } from "./Constants";
 
 function App() {
   const [employees, setEmployees] = useState([]);
@@ -17,7 +15,18 @@ function App() {
   const { fetchEmployees, addEmployee, updateEmployee, deleteEmployee } =
     useCrud();
 
-  const [error, serError] = useState();
+    const populateEmployeeArray = async () => {
+    var allEmployees = await fetchEmployees();
+    setEmployees(allEmployees);
+  };
+
+  const showSuccessMessage = (message) => {
+    toast.success(message, TOAST_CONFIG);
+  };
+
+  const showErrorMessage = (message) => {
+    toast.error(message, TOAST_CONFIG);
+  };
 
   const handleOpen = (employee = null) => {
     dispatch({
@@ -33,11 +42,14 @@ function App() {
     try {
       if (employeeData.id) {
         await updateEmployee(employeeData);
+        showSuccessMessage("Employee Updated successfully");
       } else {
         const newEmployee = await addEmployee(employeeData);
         setEmployees([...employees, newEmployee]);
+        showSuccessMessage("Employee added successfully");
       }
       dispatch({ type: "CLOSE_MODAL" });
+      populateEmployeeArray();
     } catch (error) {
       dispatch({
         type: "OPEN_MODAL",
@@ -52,31 +64,36 @@ function App() {
           ),
         },
       });
+      showErrorMessage(
+        employeeData.id ? "Failed to update employee" : "Failed to add employee"
+      );
     }
   };
 
   const handleDelete = async (id) => {
-    await deleteEmployee(id);
     try {
+      await deleteEmployee(id);
+      populateEmployeeArray();
+      showSuccessMessage("Employee deleted successfully");
+  
     } catch (error) {
-      serError(error);
+      showErrorMessage("Error deleting employee");
     }
   };
 
   useEffect(() => {
-    const a = async () => {
-      var b = await fetchEmployees();
-      setEmployees(b);
-    };
-    a();
-  });
+    populateEmployeeArray();
+  }, []);
 
   return (
     <>
       <Header handleOpen={handleOpen} />
-      <Error error={error} />
       <TableContainer component={Paper}>
-        <TableComponent handleEdit={handleOpen} handleDelete={handleDelete} employees={employees}/>
+        <TableComponent
+          handleEdit={handleOpen}
+          handleDelete={handleDelete}
+          employees={employees}
+        />
       </TableContainer>
     </>
   );

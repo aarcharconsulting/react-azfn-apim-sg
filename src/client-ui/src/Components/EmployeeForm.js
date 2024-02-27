@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, TextField, Button} from "@mui/material";
-import Error from "./Error";
+import { toast } from "react-toastify";
+import { TOAST_CONFIG } from "../Constants";
 
 const EmployeeForm = ({ employee, onSave, serverError}) => {
   const [formData, setFormData] = useState({
@@ -24,9 +25,11 @@ const EmployeeForm = ({ employee, onSave, serverError}) => {
         interests: "",
       });
     }
-
-   
   }, [employee]);
+
+  useEffect(()=>{
+    toast.error(serverError, TOAST_CONFIG);
+  },[serverError])
 
   const validate = () => {
     let tempErrors = {};
@@ -78,7 +81,6 @@ const EmployeeForm = ({ employee, onSave, serverError}) => {
       autoComplete="off"
     >
 
-    {serverError && <Error error={serverError}/>}
 
       <TextField
         name="name"
@@ -126,8 +128,8 @@ const EmployeeForm = ({ employee, onSave, serverError}) => {
         style={{
           position: "absolute",
           bottom: "0",
-          "margin-bottom": ".5rem",
-          "margin-right": "5rem",
+          marginBottom: ".5rem",
+          marginRight: "5rem",
           right: "0",
         }}
         variant="contained"

@@ -39,8 +39,26 @@ cd project-directory
 # Install dependencies
 npm install
 
-# Start the development server locally
 
-npm start-dev
+#  Client UI Start the development server locally
 
+npm start
+
+```
+### To start the function app locally add the following to local.settings.json
+
+```
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "MongoDbConnectionString": "your_local_mongodb_connection_string",
+    "MongoDbDatabaseName": "your_local_database_name"
+  },
+  "Host": {
+    "CORS": "*",
+    "CORSCredentials": false
+  }
+}
 ```
