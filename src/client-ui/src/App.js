@@ -17,7 +17,7 @@ function App() {
   const { fetchEmployees, addEmployee, updateEmployee, deleteEmployee } =
     useCrud();
 
-  const [error, serError] = useState("asdasd");
+  const [error, serError] = useState();
 
   const handleOpen = (employee = null) => {
     dispatch({
